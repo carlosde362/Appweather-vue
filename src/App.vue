@@ -54,7 +54,8 @@ export default {
       this.openweather.getAllWeather((err, inf) => this.fmostrar(inf));
     },
     fmostrar(datosTiempo) {
-      //console.log(datosTiempo);
+      console.log(datosTiempo);
+      this.fcambiarfondo(datosTiempo.weather[0].main);
       this.localizacion = datosTiempo.name + ", " + datosTiempo.sys.country;
       this.temperatura = Math.round(datosTiempo.main.temp) + "ºC";
       this.estadoActual = datosTiempo.weather[0].description;
@@ -70,6 +71,11 @@ export default {
       weather.setLang("es");
       weather.setUnits("metric");
       return weather;
+    },
+    fcambiarfondo(estadoCielo) {
+      const unsplash = require("unsplash");
+      let url = unsplash(1920, 1080, estadoCielo);
+      document.body.style.backgroundImage = `url('${url}')`;
     },
   },
 };
@@ -87,10 +93,6 @@ body {
   width: 100%;
   height: 100%;
   display: block;
-}
-
-body.cambiarFondo {
-  background-image: url("./assets/hot.jpg");
 }
 
 .buscador {
@@ -152,6 +154,10 @@ body.cambiarFondo {
   .form-buscar {
     padding: 10px;
     font-size: 150%;
+  }
+
+  .vertiempo {
+    font-size: 100%;
   }
 }
 </style>
