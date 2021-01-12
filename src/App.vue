@@ -8,12 +8,18 @@
           class="form-buscar"
           v-model="ciudad"
           placeholder="Nombre de la ciudad..."
+          @keyup.enter="fcomprobar"
         />
-        <button @click="fcomprobar">Consultar</button>
       </div>
-      <div class="vertiempo">
-        <p>{{ this.ciudad }}</p>
-        <p></p>
+      <div class="vertiempo" v-if="this.localizacion != null">
+        <h1>
+          {{ this.localizacion }}
+        </h1>
+        <h2>
+          {{ this.temperatura }}
+          {{ this.estadoActual }}
+        </h2>
+        <h2>{{ this.humedad }}</h2>
       </div>
     </div>
   </div>
@@ -26,27 +32,35 @@ export default {
     return {
       ciudad: "",
       openweather: this.fcrearObjeto(),
-      tiempoActual: null,
+      tiempoActual: undefined,
+      localizacion: null,
+      temperatura: null,
+      estadoActual: null,
+      humedad: null,
     };
   },
   methods: {
     fcomprobar() {
-      window.alert(this.ciudad);
       const ciudad = this.ciudad;
-      const ExpreCiudad = /^([a-z]+|[a-z]\s[a-z])+$/i;
+      const ExpreCiudad = /^([a-z]+|[a-z]+\s[a-z+])+$/i;
       if (ExpreCiudad.test(ciudad)) {
         this.fverTiempo(ciudad);
       }
     },
     fverTiempo(ciudad) {
       this.openweather.setCity(ciudad);
-      /*  this.openweather.getAllWeather(function (err, inf) {
-        console.log(inf);
-      }); */
-      let resultados = this.openweather.getAllWeather(function (err, inf) {
-        return inf;
-      });
-      console.log(resultados);
+      this.openweather.getAllWeather((err, inf) => this.fmostrar(inf));
+    },
+    fmostrar(datosTiempo) {
+      console.log(datosTiempo);
+      this.localizacion = datosTiempo.name + ", " + datosTiempo.sys.country;
+      this.temperatura = Math.round(datosTiempo.main.temp) + "ºC";
+      this.estadoActual = datosTiempo.weather[0].description;
+      this.humedad = datosTiempo.main.humidity + "% humedad";
+      if (datosTiempo.main.temp >= 20) {
+        document.getElementById("app").style.backgroundImage =
+          "url('./assets/hot.jpg')";
+      }
     },
     fcrearObjeto() {
       const weather = require("openweather-apis");
@@ -60,20 +74,25 @@ export default {
 </script>
 
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap");
 body {
-  /* background-color: grey; */
   background-image: url("./assets/green.jpg");
+  width: 90%;
   margin: auto;
 }
+
 .contenedor {
   width: 100%;
   height: 100%;
   display: block;
 }
 
+body.cambiarFondo {
+  background-image: url("./assets/hot.jpg");
+}
+
 .buscador {
   padding: 20px;
-  border: solid red;
   margin-top: 5%;
   display: flex;
   justify-content: center;
@@ -100,19 +119,23 @@ body {
   border-bottom-right-radius: 0;
 }
 
-.buscador button {
-  margin: 10px;
-  padding: 15px;
-  background-color: #273746;
-  color: white;
-  border: none;
-  outline: none;
-  border-radius: 10px;
+.vertiempo {
+  width: max-content;
+  margin: auto;
+  padding: 20px;
+  color: black;
+  font-size: 150%;
+  font-weight: bold;
+  text-align: center;
+  font-family: "Open Sans", sans-serif;
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 10px 10px 10px 1px rgba(0, 0, 0, 0.75);
 }
 
-.vetiempo {
-  border: solid orange;
-  margin: center;
+.vertiempo h1 {
+  font-style: italic;
 }
 
 @media (max-width: 800px) {
@@ -120,6 +143,13 @@ body {
     background-position: center center;
     background-attachment: fixed;
     background-repeat: no-repeat;
+  }
+}
+
+@media (max-width: 450px) {
+  .form-buscar {
+    padding: 10px;
+    font-size: 150%;
   }
 }
 </style>
