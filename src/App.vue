@@ -7,7 +7,7 @@
           id="ciudadID"
           class="form-buscar"
           v-model="ciudad"
-          placeholder="Nombre de la ciudad..."
+          placeholder="Nombre de la ciudad"
           @keyup.enter="fcomprobar"
         />
       </div>
@@ -15,6 +15,7 @@
         <h1>
           {{ this.localizacion }}
         </h1>
+        <h2>{{ this.fecha }}</h2>
         <h2>
           {{ this.temperatura }}
           {{ this.estadoActual }}
@@ -37,6 +38,7 @@ export default {
       temperatura: null,
       estadoActual: null,
       humedad: null,
+      fecha: new Date().toLocaleDateString(),
     };
   },
   methods: {
@@ -52,15 +54,15 @@ export default {
       this.openweather.getAllWeather((err, inf) => this.fmostrar(inf));
     },
     fmostrar(datosTiempo) {
-      console.log(datosTiempo);
+      //console.log(datosTiempo);
       this.localizacion = datosTiempo.name + ", " + datosTiempo.sys.country;
       this.temperatura = Math.round(datosTiempo.main.temp) + "ºC";
       this.estadoActual = datosTiempo.weather[0].description;
       this.humedad = datosTiempo.main.humidity + "% humedad";
-      if (datosTiempo.main.temp >= 20) {
-        document.getElementById("app").style.backgroundImage =
-          "url('./assets/hot.jpg')";
-      }
+      /* if (datosTiempo.main.temp >= 20) {
+        window.alert("cambio de fondo");
+        document.body.style.backgroundImage = "url('./assets/hot.jpg')";
+      } */
     },
     fcrearObjeto() {
       const weather = require("openweather-apis");
